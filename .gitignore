@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.log
+*.zip
+# o banco é cache reconstruível a partir de dados/acervo.jsonl
+radar/dados/radar.db
+radar/dados/radar.db-wal
+radar/dados/radar.db-shm

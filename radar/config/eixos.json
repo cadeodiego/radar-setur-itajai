@@ -1,0 +1,157 @@
+{
+  "_nota": "Sementes de rd_eixo e rd_consulta. Os 9 eixos vêm de /monitorar-midia. O eixo 9 original ('portais locais') NÃO virou eixo: é coletor — ver config/fontes.json. Tema e fonte são dimensões diferentes.",
+  "cliente": {
+    "slug": "setur-itajai",
+    "nome": "SETUR Itajaí",
+    "marca": "Turismo e Eventos de Itajaí",
+    "uf": "SC",
+    "cidade": "Itajaí"
+  },
+  "eixos": [
+    {
+      "slug": "turismo",
+      "nome": "Turismo",
+      "ordem": 1,
+      "cor_claro": "#2733d6",
+      "cor_escuro": "#6674ff",
+      "consultas": [
+        "turismo Itajaí",
+        "Itajaí destino turístico Santa Catarina",
+        "\"Itajaí\" hotelaria ocupação turismo"
+      ]
+    },
+    {
+      "slug": "nautica",
+      "nome": "Náutica e Boat Show",
+      "ordem": 2,
+      "cor_claro": "#0f6b6f",
+      "cor_escuro": "#4fc3c7",
+      "consultas": [
+        "Marina Itajaí Boat Show",
+        "Itajaí náutica estaleiro marina",
+        "Boat Show Itajaí visitantes balanço"
+      ]
+    },
+    {
+      "slug": "cruzeiros",
+      "nome": "Cruzeiros",
+      "ordem": 3,
+      "cor_claro": "#1a5a99",
+      "cor_escuro": "#5fa8e8",
+      "consultas": [
+        "Itajaí cruzeiros temporada navios",
+        "porto de Itajaí escala navio cruzeiro",
+        "terminal de cruzeiros Itajaí"
+      ]
+    },
+    {
+      "slug": "marejada",
+      "nome": "Marejada",
+      "ordem": 4,
+      "cor_claro": "#8a5210",
+      "cor_escuro": "#e5a53a",
+      "consultas": [
+        "Marejada Itajaí",
+        "Marejada Itajaí público shows atrações",
+        "Marejada Itajaí gestão edital"
+      ]
+    },
+    {
+      "slug": "licitacoes",
+      "nome": "Editais e licitações",
+      "ordem": 5,
+      "cor_claro": "#a8321f",
+      "cor_escuro": "#f0765e",
+      "sensivel": true,
+      "_nota": "Tema sensível declarado na skill: licitação de alto valor, gastos públicos, terceirização. Alerta de crise cruza este eixo com nota baixa.",
+      "consultas": [
+        "Itajaí edital eventos chamamento credenciamento turismo",
+        "Itajaí licitação eventos contrato secretaria turismo",
+        "Itajaí gastos eventos prefeitura questionamento"
+      ]
+    },
+    {
+      "slug": "praias-verao",
+      "nome": "Praias e verão",
+      "ordem": 6,
+      "cor_claro": "#1f7a4d",
+      "cor_escuro": "#4fc98a",
+      "consultas": [
+        "Itajaí praias verão Estação Verão",
+        "praia Brava Itajaí Cabeçudas balneabilidade",
+        "Itajaí temporada de verão estrutura praias"
+      ]
+    },
+    {
+      "slug": "economia-azul",
+      "nome": "Economia azul",
+      "ordem": 7,
+      "cor_claro": "#4338a8",
+      "cor_escuro": "#9b8ff5",
+      "consultas": [
+        "Itajaí economia azul polo náutico",
+        "Itajaí pesca porto economia do mar",
+        "The Ocean Race Itajaí"
+      ]
+    },
+    {
+      "slug": "setur",
+      "nome": "SETUR institucional",
+      "ordem": 8,
+      "cor_claro": "#4a5568",
+      "cor_escuro": "#9aa5b8",
+      "consultas": [
+        "SETUR Itajaí Secretaria Turismo Eventos",
+        "Secretaria de Turismo Itajaí anúncio",
+        "\"A Cidade Mais Querida\" Itajaí"
+      ]
+    },
+    {
+      "slug": "eventos",
+      "nome": "Eventos e festivais",
+      "ordem": 9,
+      "cor_claro": "#7a2f6b",
+      "cor_escuro": "#d18ac4",
+      "_nota": "Faltava nas sementes originais: o cliente é 'Turismo E EVENTOS'. Sem este eixo, Festival de Música, Réveillon, Semana do Pescado e Feira de Negócios ficavam sem casa e caíam como fora de tema.",
+      "consultas": [
+        "Itajaí festival show evento",
+        "Réveillon Itajaí programação",
+        "Itajaí feira congresso festa calendário de eventos"
+      ]
+    }
+  ],
+  "termos": [
+    { "termo": "Itajaí", "tipo": "marca", "obrigatorio": true, "variantes": ["Itajai"] },
+    { "termo": "SETUR", "tipo": "marca", "variantes": ["Secretaria de Turismo e Eventos", "Secretaria de Turismo"] },
+    { "termo": "A Cidade Mais Querida", "tipo": "marca", "variantes": ["Maix Quirida", "A Cidade Maix Quirida"] },
+    { "termo": "Marejada", "tipo": "evento" },
+    { "termo": "Marina Itajaí Boat Show", "tipo": "evento", "variantes": ["Boat Show"] },
+    { "termo": "The Ocean Race", "tipo": "evento", "variantes": ["Ocean Race"] },
+    { "termo": "Réveillon Itajaí", "tipo": "evento", "variantes": ["Reveillon Itajai"] },
+    { "termo": "licitação", "tipo": "negativo", "variantes": ["licitacao", "superfaturamento", "irregularidade", "improbidade", "TCE"] },
+    { "termo": "Balneário Camboriú", "tipo": "concorrente", "variantes": ["Balneario Camboriu", "BC"] },
+    { "termo": "Navegantes", "tipo": "concorrente" }
+  ],
+  "relevancia": {
+    "_nota": "Google News devolve muita coisa de Balneário Camboriú e Navegantes numa busca por Itajaí. Sem este filtro o wall enche de ruído regional.",
+    "exige_um_de": ["itajai", "itajaí", "marejada", "setur"],
+    "penaliza": ["balneario camboriu", "balneário camboriú", "navegantes", "florianopolis", "florianópolis", "itajai do sul", "rio itajai-acu"],
+    "corte": 0.35
+  },
+
+  "tema": {
+    "_nota": "Segundo filtro, e é outro problema: relevância responde 'é sobre Itajaí?', tema responde 'é sobre turismo e eventos?'. Sem ele o wall enche de release da Prefeitura sobre taekwondo, castramóvel e mutirão do Procon — cidade certa, assunto errado. Item que não casa com nenhum eixo é gravado como fora de tema, não sumido.",
+    "palavras": {
+      "turismo": ["turismo", "turista", "turístic", "destino", "hotel", "hotelaria", "pousada", "ocupação", "visitante", "hospedagem", "trade turístico", "roteiro"],
+      "nautica": ["náutic", "nautic", "boat", "marina", "estaleiro", "veleiro", "vela", "iate", "lancha", "barco", "embarcação", "regata", "velejador"],
+      "cruzeiros": ["cruzeiro", "navio", "transatlântico", "escala", "temporada de cruzeiros", "terminal de passageiros", "porto de itajaí", "atracação"],
+      "marejada": ["marejada"],
+      "licitacoes": ["licitaç", "licitac", "edital", "chamamento", "credenciamento", "contrato", "tce", "tribunal de contas", "superfatur", "irregularidade", "improbidade", "concessão", "concorrência pública", "dispensa de licitação", "aditivo"],
+      "praias-verao": ["praia", "balneabilidade", "verão", "temporada de verão", "estação verão", "atalaia", "cabeçudas", "brava", "molhes", "orla", "surf", "surfe"],
+      "economia-azul": ["economia azul", "pesca", "pescado", "porto", "portuári", "ocean race", "produção naval", "polo náutico", "cais", "logística portuária"],
+      "setur": ["setur", "secretaria de turismo", "secretaria municipal de turismo", "cidade mais querida", "maix quirida", "convention", "fundação de eventos"],
+      "eventos": ["evento", "festival", "festa", "show", "feira", "congresso", "réveillon", "reveillon", "carnaval", "programação", "atração", "camarote", "arena", "centreventos", "expo", "semana do pescado", "páscoa", "natal", "mostra", "exposição", "circuito", "torneio", "aniversário da cidade", "abertura oficial"]
+    },
+    "descartar_sem_eixo": true
+  }
+}

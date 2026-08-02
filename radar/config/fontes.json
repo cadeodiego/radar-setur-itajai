@@ -1,0 +1,63 @@
+{
+  "_nota": "Sementes de rd_veiculo e dos coletores por fonte. 'portais locais' era o eixo 9 da skill; aqui vira o que de fato é: coletor. alcance_natureza segue o contrato do recortes.json — número sem origem declarada não vira número.",
+
+  "coletores": {
+    "google_news": {
+      "ativo": true,
+      "base": "https://news.google.com/rss/search",
+      "params": { "hl": "pt-BR", "gl": "BR", "ceid": "BR:pt-419" },
+      "janela_padrao": "30d",
+      "_armadilha": "A URL do item é ofuscada (/rss/articles/CBMi...) e NÃO redireciona mais: precisa ser resolvida via batchexecute. Guardar o link cru faz o mesmo item entrar duas vezes no dedupe."
+    },
+    "portais_locais": {
+      "ativo": true,
+      "_nota": "Consultas com site: no Google News. Pega o que o índice geral demora a mostrar.",
+      "sites": [
+        "ndmais.com.br",
+        "diarinho.net",
+        "itajai.sc.gov.br",
+        "nautica.com.br",
+        "portaldeitajai.com.br",
+        "clicklitoral.com.br",
+        "nsctotal.com.br",
+        "diariodolitoral.com.br"
+      ],
+      "termos": ["Itajaí turismo", "Itajaí eventos", "Marejada", "SETUR Itajaí"]
+    },
+    "rss_nativo": {
+      "ativo": true,
+      "_nota": "Camada de garantia: feed próprio do portal, quando existe. Independe do Google. Descoberta de feed é automática (link rel=alternate / caminhos comuns).",
+      "candidatos": [
+        "https://ndmais.com.br/feed/",
+        "https://www.diarinho.net/feed/",
+        "https://itajai.sc.gov.br/feed",
+        "https://turismo.itajai.sc.gov.br/feed",
+        "https://www.nautica.com.br/feed/"
+      ]
+    }
+  },
+
+  "veiculos": [
+    { "dominio": "ndmais.com.br", "nome": "ND Mais", "tipo": "portal", "uf": "SC", "peso": 1.0 },
+    { "dominio": "diarinho.net", "nome": "O Diarinho", "tipo": "jornal", "uf": "SC", "cidade": "Itajaí", "peso": 1.0,
+      "_armadilha": "Bloqueia fetch simples com HTTP 403. Exige Firecrawl com render. Sem data confirmada, marcar publicado_precisao=aproximada — nunca afirmar data exata." },
+    { "dominio": "itajai.sc.gov.br", "nome": "Prefeitura de Itajaí", "tipo": "oficial", "uf": "SC", "cidade": "Itajaí", "peso": 0.6,
+      "_nota": "Fonte oficial é release, não cobertura espontânea. Peso menor de propósito: não infla clipping com a própria voz do cliente." },
+    { "dominio": "nsctotal.com.br", "nome": "NSC Total", "tipo": "portal", "uf": "SC", "peso": 1.2 },
+    { "dominio": "nautica.com.br", "nome": "Náutica", "tipo": "revista", "peso": 0.9 },
+    { "dominio": "diariodoturismo.com.br", "nome": "Diário do Turismo", "tipo": "portal", "peso": 0.8 },
+    { "dominio": "portaldeitajai.com.br", "nome": "Portal de Itajaí", "tipo": "portal", "uf": "SC", "cidade": "Itajaí", "peso": 0.8 },
+    { "dominio": "clicklitoral.com.br", "nome": "Click Litoral", "tipo": "portal", "uf": "SC", "peso": 0.7 },
+    { "dominio": "g1.globo.com", "nome": "g1", "tipo": "portal", "peso": 1.5 },
+    { "dominio": "diariodolitoral.com.br", "nome": "Diário do Litoral", "tipo": "portal", "uf": "SC", "peso": 0.7 }
+  ],
+
+  "fora_de_escopo": {
+    "_nota": "Buraco declarado. Vai integral para a nota metodológica — declarar o que não se vê é o que faz o resto do número valer.",
+    "x_twitter": "Sem caminho gratuito. O tier free da API v2 é write-only; leitura exige plano pago. Não coberto.",
+    "tiktok": "Research API restrita a pesquisa acadêmica. Sem cobertura por API. Eventual amostra por raspagem de página pública é indicativa, nunca métrica contratual.",
+    "facebook_terceiros": "Busca de conteúdo público por palavra-chave foi removida da Graph API. CrowdTangle desligado em ago/2024; Meta Content Library é restrita a academia/ONG. Só página própria.",
+    "instagram_sem_arroba": "A Graph API só entrega menção com @ explícito, marcação em foto e hashtag. Menção em texto sem @ e Stories de terceiros não existem na API.",
+    "chatgpt_perplexity": "Sem tier gratuito de API. Entram como auditoria manual mensal com evidência arquivada."
+  }
+}

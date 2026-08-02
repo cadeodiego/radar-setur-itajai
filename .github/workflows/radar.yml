@@ -1,0 +1,117 @@
+# Rotina diária do RADAR.
+#
+# Roda a coleta, classifica o que chegou, republica o painel e devolve o banco
+# atualizado para o repositório. Não depende de máquina ligada.
+#
+# Copiar para .github/workflows/radar.yml no repositório do painel.
+name: RADAR — coleta diária
+
+on:
+  schedule:
+    # 13:07 UTC = 10:07 em Brasília (o Brasil não tem mais horário de verão,
+    # então UTC-3 é estável o ano todo). Os 7 minutos são de propósito: o cron
+    # do GitHub enfileira no minuto cheio e atrasa mais quando todo mundo pede
+    # a mesma hora.
+    - cron: "7 13 * * *"
+  workflow_dispatch:        # permite rodar à mão pela aba Actions
+
+concurrency:
+  group: radar
+  cancel-in-progress: false   # nunca cortar uma coleta pela metade
+
+permissions:
+  contents: write     # devolve banco, payload e capas ao repositório
+  pages: write
+  id-token: write
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      # O banco é grande e binário: commitá-lo todo dia seriam centenas de MB
+      # de histórico por ano, e o git não faz delta de SQLite. Ele vive no cache
+      # e o registro durável é o acervo.jsonl, que é texto e versiona direito.
+      - name: Recuperar o banco do cache
+        uses: actions/cache@v4
+        with:
+          path: radar/dados/radar.db
+          key: radar-db-${{ github.run_id }}
+          restore-keys: radar-db-
+
+      - name: Reconstruir do acervo se o cache falhou
+        working-directory: radar
+        run: |
+          if [ ! -f dados/radar.db ]; then
+            echo "cache vazio — reconstruindo a partir de dados/acervo.jsonl"
+            uv run radar.py importar
+          fi
+
+      - name: Coletar
+        working-directory: radar
+        run: uv run radar.py coletar --janela 7d
+
+      - name: Enriquecer
+        working-directory: radar
+        run: uv run radar.py enriquecer --limite 200 --paralelo 6
+
+      - name: Capas
+        working-directory: radar
+        run: uv run radar.py capas --limite 200 --paralelo 5
+
+      - name: Reagrupar matérias
+        working-directory: radar
+        run: uv run radar.py reclusterizar
+
+      # Sem a chave o passo falha alto em vez de publicar matéria sem nota
+      # fingindo que está tudo certo.
+      - name: Classificar humor
+        working-directory: radar
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: uv run radar.py autoclassificar --limite 150 --paralelo 4
+
+      - name: Podar acervo
+        working-directory: radar
+        run: uv run radar.py compactar
+
+      - name: Publicar payload
+        working-directory: radar
+        run: uv run radar.py publicar
+
+      - name: Exportar o acervo durável
+        working-directory: radar
+        run: uv run radar.py exportar
+
+      - name: Resumo da rodada
+        working-directory: radar
+        run: uv run radar.py estado >> "$GITHUB_STEP_SUMMARY"
+
+      # Só o acervo em texto e as capas voltam para o repositório. O painel em
+      # si vai para o Pages pelo artefato, não pelo commit.
+      - name: Devolver o acervo ao repositório
+        run: |
+          git config user.name  "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add radar/dados/acervo.jsonl radar/web/dados.json radar/web/capas || true
+          if git diff --cached --quiet; then
+            echo "nada mudou nesta rodada"
+          else
+            git commit -m "radar: coleta de $(date -u +%Y-%m-%d)"
+            git pull --rebase --autostash || true
+            git push
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: radar/web
+      - id: deployment
+        uses: actions/deploy-pages@v4
