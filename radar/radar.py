@@ -688,20 +688,6 @@ def cmd_autoclassificar(args) -> None:
     from motor import classificar as mod_cls
 
     con = _con()
-    # conferir a chave ANTES de abrir a fila: sem isso o erro só apareceria
-    # dentro das threads, como traceback, item por item
-    try:
-        mod_cls._chave()
-    except mod_cls.SemChave as e:
-        print(f"ERRO: {e}")
-        sys.exit(1)
-    cliente = _cfg(con, "cliente").get("nome", "o município")
-    rubrica_id = banco._semear_rubrica(con, modelo=args.modelo)
-    con.commit()
-    rub = con.execute(
-        "SELECT id, versao, texto_md, prompt_md, modelo FROM rd_rubrica WHERE id=?", (rubrica_id,)
-    ).fetchone()
-
     fila = con.execute(
         "SELECT i.id, i.titulo, i.resumo, i.corpo, v.nome veiculo FROM rd_item i "
         "LEFT JOIN rd_veiculo v ON v.id=i.veiculo_id "
@@ -711,6 +697,22 @@ def cmd_autoclassificar(args) -> None:
     if not fila:
         print("nada a classificar")
         return
+
+    # A chave só é exigida quando há trabalho: cobrar antes reprovaria uma
+    # rodada que não tinha nada a fazer. Mas é conferida ANTES de disparar as
+    # threads — senão o erro voltaria como traceback, um por item.
+    try:
+        mod_cls._chave()
+    except mod_cls.SemChave as e:
+        print(f"ERRO: {e}")
+        sys.exit(1)
+
+    cliente = _cfg(con, "cliente").get("nome", "o município")
+    rubrica_id = banco._semear_rubrica(con, modelo=args.modelo)
+    con.commit()
+    rub = con.execute(
+        "SELECT id, versao, texto_md, prompt_md, modelo FROM rd_rubrica WHERE id=?", (rubrica_id,)
+    ).fetchone()
     print(f"{len(fila)} a classificar · rubrica {rub['versao']} · modelo {rub['modelo']}", flush=True)
 
     def trabalho(l):
