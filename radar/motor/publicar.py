@@ -162,8 +162,18 @@ def montar_payload(con) -> dict:
     if aprox:
         limites.append(f"{aprox} inserções estão com data aproximada (veio do índice de busca, "
                        f"não da matéria) e aparecem marcadas com ~ no card.")
+    # matéria sem nota não some do wall nem entra na conta como se fosse neutra:
+    # aparece com "—" e é contada aqui, para o percentual do contrato ser lido
+    # sabendo sobre que fatia ele foi calculado
+    pendentes = len(itens) - len(notas_todas)
     if not notas_todas:
         limites.append("Nenhuma inserção classificada ainda: o humor não é exibido.")
+    elif pendentes:
+        limites.append(
+            f"{pendentes} das {len(itens)} inserções ainda não têm nota de humor e aparecem "
+            f"com “—” no card. O humor médio e o percentual positivo/neutro são calculados "
+            f"apenas sobre as {len(notas_todas)} classificadas — não sobre o total."
+        )
 
     # composição da amostra: sem isto o percentual positivo parece melhor do que é
     oficial = con.execute(
@@ -200,6 +210,8 @@ def montar_payload(con) -> dict:
             "humor_medio": round(sum(notas_todas) / len(notas_todas), 2) if notas_todas else None,
             "pct_pos_neu": round(100 * len(pos_neu) / len(notas_todas)) if notas_todas else None,
             "criticas": sum(1 for n in notas_todas if n <= 4),
+            "classificadas": len(notas_todas),
+            "pendentes": pendentes,
             "descartados": descartados,
         },
         "resumo_semana": _resumo(itens, fim - timedelta(days=6), fim, "últimos 7 dias"),

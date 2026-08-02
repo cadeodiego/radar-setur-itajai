@@ -701,9 +701,19 @@ def cmd_autoclassificar(args) -> None:
     # A chave só é exigida quando há trabalho: cobrar antes reprovaria uma
     # rodada que não tinha nada a fazer. Mas é conferida ANTES de disparar as
     # threads — senão o erro voltaria como traceback, um por item.
+    #
+    # Falta de chave e chave quebrada são coisas diferentes. NÃO CONFIGURADO é
+    # estado legítimo: o painel segue atualizando a coleta e declara quantas
+    # matérias estão sem nota. QUEBRADO é defeito, e aí falha alto. Tratar os
+    # dois igual faria a rotina diária parar de rodar todo dia por uma
+    # configuração que ainda não existe.
     try:
         mod_cls._chave()
     except mod_cls.SemChave as e:
+        if args.opcional:
+            print(f"sem ANTHROPIC_API_KEY — {len(fila)} inserções seguem sem nota, "
+                  f"declaradas como pendentes no painel.")
+            return
         print(f"ERRO: {e}")
         sys.exit(1)
 
@@ -985,6 +995,8 @@ def main() -> None:
     ac.add_argument("--paralelo", type=int, default=4)
     ac.add_argument("--modelo", default="claude-haiku-4-5-20251001",
                     help="ID COMPLETO e datado; alias muda a série histórica sem commit")
+    ac.add_argument("--opcional", action="store_true",
+                    help="sem chave, segue em frente e declara as pendentes (uso da rotina diária)")
     ac.set_defaults(f=cmd_autoclassificar)
 
     cp = sub.add_parser("compactar")

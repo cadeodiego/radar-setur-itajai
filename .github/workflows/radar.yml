@@ -70,13 +70,16 @@ jobs:
         working-directory: radar
         run: uv run radar.py reclusterizar
 
-      # Sem a chave o passo falha alto em vez de publicar matéria sem nota
-      # fingindo que está tudo certo.
+      # --opcional distingue NÃO CONFIGURADO de QUEBRADO. Sem o secret, a
+      # coleta do dia segue e o painel declara quantas ficaram sem nota. Com o
+      # secret presente mas falhando, o passo sai com código 1 e a rodada para
+      # antes de publicar — publicar matéria sem nota fingindo normalidade é
+      # pior que não publicar.
       - name: Classificar humor
         working-directory: radar
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: uv run radar.py autoclassificar --limite 150 --paralelo 4
+        run: uv run radar.py autoclassificar --limite 150 --paralelo 4 --opcional
 
       - name: Podar acervo
         working-directory: radar

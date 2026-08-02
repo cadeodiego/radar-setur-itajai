@@ -442,8 +442,10 @@ function kpis(){
     {r:"Inserções",v:k.insercoes,p:"cada publicação conta"},
     {r:"Matérias",v:k.materias,p:"replicação agrupada"},
     {r:"Veículos",v:D.veiculos.length,p:"distintos no período"},
-    {r:"Humor médio",v:k.humor_medio==null?"—":k.humor_medio.toFixed(1),u:"/10",p:"escala 0–10"},
-    {r:"Positivo + neutro",v:k.pct_pos_neu==null?"—":k.pct_pos_neu,u:"%",p:"meta contratual ≥ 75%"},
+    {r:"Humor médio",v:k.humor_medio==null?"—":k.humor_medio.toFixed(1),u:"/10",
+     p:k.pendentes?`sobre ${k.classificadas} de ${k.insercoes} classificadas`:"escala 0–10"},
+    {r:"Positivo + neutro",v:k.pct_pos_neu==null?"—":k.pct_pos_neu,u:"%",
+     p:k.pendentes?`meta ≥ 75% · ${k.pendentes} sem nota ainda`:"meta contratual ≥ 75%"},
     {r:"Atenção",v:k.criticas,p:"notas ≤ 4 no período"}
   ];
   document.getElementById("kpis").innerHTML=cartoes.map(c=>
